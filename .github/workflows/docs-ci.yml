@@ -1,0 +1,67 @@
+name: Docs CI
+
+on:
+  push:
+    paths:
+      - "docs/**"
+      - "scripts/**"
+      - ".github/workflows/docs-ci.yml"
+  pull_request:
+    paths:
+      - "docs/**"
+      - "scripts/**"
+  workflow_dispatch: {}
+
+jobs:
+  lint-markdown:
+    name: Lint Markdown style
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run markdownlint
+        uses: DavidAnson/markdownlint-cli2-action@v16
+        with:
+          config: ".markdownlint.yaml"
+          globs: "docs/**/*.md"
+
+  check-links:
+    name: Check for broken links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run lychee link checker
+        uses: lycheeverse/lychee-action@v1
+        with:
+          args: >
+            --no-progress
+            --exclude-mail
+            docs/**/*.md
+          fail: true
+
+  validate-python-samples:
+    name: Validate Python code samples compile
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Extract Python blocks from docs
+        run: |
+          python3 scripts/extract_code_blocks.py --lang python --out /tmp/py_blocks docs/*.md
+      - name: Validate extracted blocks
+        run: |
+          python3 scripts/validate_python_syntax.py /tmp/py_blocks
+
+  validate-curl-against-stripe-spec:
+    name: Validate cURL examples against live Stripe OpenAPI spec
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Run mock validation
+        run: |
+          chmod +x scripts/validate_curl_against_mock.sh
+          ./scripts/validate_curl_against_mock.sh
