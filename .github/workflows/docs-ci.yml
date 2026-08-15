@@ -51,7 +51,7 @@ jobs:
           python3 scripts/extract_code_blocks.py --lang python --out /tmp/py_blocks docs/*.md
       - name: Validate extracted blocks
         run: |
-          python3 scripts/validate_python_syntax.py /tmp/py_blocks
+          python3 scripts/validate-python-syntax.py /tmp/py_blocks
 
   validate-curl-against-stripe-spec:
     name: Validate cURL examples against live Stripe OpenAPI spec
