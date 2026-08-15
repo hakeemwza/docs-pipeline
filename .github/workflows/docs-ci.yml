@@ -48,7 +48,7 @@ jobs:
           python-version: "3.12"
       - name: Extract Python blocks from docs
         run: |
-          python3 scripts/extract_code_blocks.py --lang python --out /tmp/py_blocks docs/*.md
+          python3 scripts/extract-code-blocks.py --lang python --out /tmp/py_blocks docs/*.md
       - name: Validate extracted blocks
         run: |
           python3 scripts/validate-python-syntax.py /tmp/py_blocks
@@ -63,5 +63,5 @@ jobs:
           node-version: "20"
       - name: Run mock validation
         run: |
-          chmod +x scripts/validate_curl_against_mock.sh
-          ./scripts/validate_curl_against_mock.sh
+          chmod +x scripts/validate-curl-against-mock.sh
+          ./scripts/validate-curl-against-mock.sh
