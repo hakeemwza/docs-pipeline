@@ -1,31 +1,6 @@
-# .lycheeignore
-# One pattern per line. Lychee treats each line as a regex matched
-# against the full URL. Lines starting with # are comments.
-#
-# Keep this file scoped to real, justified exceptions -- don't use it
-# to silence links you haven't actually checked.
-
-# Localhost / mock server -- used by validate-curl-against-mock.sh,
-# never reachable from CI as a real link
-http://127\.0\.0\.1.*
-http://localhost.*
-
-# Generic placeholder domains used in code samples and docs prose
-# (never meant to resolve)
-https://example\.com.*
-https://your-domain\.com.*
-https://api\.yourcompany\.com.*
-
-# Stripe API host is checked live inside validate-curl-against-mock.sh
-# against the mock server, not by lychee -- exclude from the general
-# link checker to avoid double-validating and to avoid false failures
-# if Stripe's docs site rate-limits CI IPs
-https://api\.stripe\.com.*
-
-# mailto: links -- already excluded via --exclude-mail flag in the
-# workflow, listed here too for anyone running lychee locally without
-# that flag
-^mailto:.*
-
-# Anchor-only links (in-page navigation, not external)
-^#.*
+# Tango Card API examples with placeholder credentials
+https://integration-api.tangocard.com/raas/v2/accounts/your_account_identifier
+https://integration-api.tangocard.com/raas/v2/catalogs/your_catalog
+https://integration-api.tangocard.com/raas/v2/available
+https://integration-api.tangocard.com/raas/v2/orders
+https://integration-api.tangocard.com/raas/v2/orders/your_reference_order_id
