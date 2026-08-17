@@ -5,7 +5,7 @@
 # Stripe API and requires no secret keys -- it only proves the request shape
 # (method, path, required params) matches the current published spec.
 #
-# Usage: ./validate_curl_against_mock.sh
+# Usage: ./scripts/validate-curl-against-mock.sh
 set -euo pipefail
 
 DOC_FILE="docs/02-api-reference-stripe-paymentintents.md"
@@ -37,7 +37,8 @@ for i in $(seq 1 30); do
 done
 
 echo "==> Extracting cURL example from ${DOC_FILE}..."
-python3 scripts/extract_code_blocks.py --lang bash --out /tmp/curl_blocks "$DOC_FILE"
+# FIXED: was "extract_code_blocks.py" (underscore) -- real file is hyphenated
+python3 scripts/extract-code-blocks.py --lang bash --out /tmp/curl_blocks "$DOC_FILE"
 
 FAIL=0
 for block in /tmp/curl_blocks/*.sh; do
@@ -49,7 +50,14 @@ for block in /tmp/curl_blocks/*.sh; do
     -e "s#sk_test_51ABC...#sk_test_mock#g" \
     "$block")
 
-  STATUS=$(bash -c "$REWRITTEN" -o /tmp/curl_response.json -w '%{http_code}' -s -o /dev/null || echo "000")
+  # FIXED: was `bash -c "$REWRITTEN" -o ... -w ... -s -o ...`
+  # Those flags after a bash -c string become $0/$1/$2 inside it, NOT
+  # flags appended to curl -- they never reached curl, so $STATUS held
+  # curl's raw response body instead of an HTTP status code. `eval` puts
+  # the appended flags on the same command line as the extracted curl
+  # call, so they actually apply. Also removed the duplicate -o flag
+  # (the original had two, and the second silently discarded the first).
+  STATUS=$(eval "$REWRITTEN" -sS -o /tmp/curl_response.json -w '%{http_code}' 2>/dev/null || echo "000")
 
   if [[ "$STATUS" =~ ^2 ]]; then
     echo "    -> HTTP $STATUS (OK)"
