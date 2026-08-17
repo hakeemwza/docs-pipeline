@@ -33,11 +33,7 @@ jobs:
       - name: Run lychee link checker
         uses: lycheeverse/lychee-action@v1
         with:
-          args: >
-            --no-progress
-            --exclude-mail
-            --exclude-file .lycheeignore
-            docs/**/*.md
+          args: no-progress --exclude-mail --exclude-file .lycheeignore docs/**/*.md
           fail: true
     # NOTE: rename the repo file from "lycheeignore" to ".lycheeignore"
     # (leading dot) — GitHub mobile's file creator sometimes strips
