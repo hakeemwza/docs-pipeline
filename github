@@ -1,0 +1,78 @@
+name: Docs CI
+
+on:
+  push:
+    paths:
+      - "docs/**"
+      - "scripts/**"
+      - ".github/workflows/docs-ci.yml"
+  pull_request:
+    paths:
+      - "docs/**"
+      - "scripts/**"
+  workflow_dispatch: {}
+
+jobs:
+  lint-markdown:
+    name: Lint Markdown style
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run markdownlint
+        uses: DavidAnson/markdownlint-cli2-action@v16
+        with:
+          # FIXED: was ".markdownlint.yaml" — your repo file is ".markdownlint.yml"
+          config: ".markdownlint.yml"
+          globs: "docs/**/*.md"
+
+  check-links:
+    name: Check for broken links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run lychee link checker
+        uses: lycheeverse/lychee-action@v1
+        with:
+          args: >
+            --no-progress
+            --exclude-mail
+            --exclude-file .lycheeignore
+            docs/**/*.md
+          fail: true
+    # NOTE: rename the repo file from "lycheeignore" to ".lycheeignore"
+    # (leading dot) — GitHub mobile's file creator sometimes strips
+    # leading dots if typed without care. Verify the rename stuck.
+
+  validate-python-samples:
+    name: Validate Python code samples compile
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Extract Python blocks from docs
+        run: |
+          python3 scripts/extract-code-blocks.py --lang python --out /tmp/py_blocks docs/*.md
+      - name: Validate extracted blocks
+        run: |
+          python3 scripts/validate-python-syntax.py /tmp/py_blocks
+    # UNVERIFIED: contents of extract-code-blocks.py and
+    # validate-python-syntax.py not yet reviewed. Send these next.
+
+  validate-curl-against-stripe-spec:
+    name: Validate cURL examples against live Stripe OpenAPI spec
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Run mock validation
+        run: |
+          chmod +x scripts/validate-curl-against-mock.sh
+          ./scripts/validate-curl-against-mock.sh
+    # UNVERIFIED: job name says "live Stripe spec", script name says
+    # "mock" — those are two different things. Need the script content
+    # to confirm which one this job is actually doing, and whether it
+    # starts the Prism mock server itself before running curl.
