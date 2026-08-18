@@ -44,13 +44,16 @@ for entry in "${DOC_SPEC_MAP[@]}"; do
   }
   trap cleanup EXIT
 
+  echo "==> Waiting for mock server to initialize..."
+  sleep 5
+
   echo "==> Waiting for mock server to become healthy..."
-  for i in $(seq 1 30); do
+  for i in $(seq 1 60); do
     if curl -s -o /dev/null "$MOCK_HOST"; then
       echo "Mock server is up."
       break
     fi
-    if [ "$i" -eq 30 ]; then
+    if [ "$i" -eq 60 ]; then
       echo "Mock server did not start in time." >&2
       exit 1
     fi
