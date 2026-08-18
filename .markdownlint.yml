@@ -12,7 +12,6 @@ rules:
     code_blocks: false
     code_lines: false
     tables: false
-    headers: true
   no-hard-tabs:
     code_blocks: true
   whitespace:
