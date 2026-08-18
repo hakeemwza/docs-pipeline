@@ -18,7 +18,7 @@ https://your-domain\.com.*
 
 # Stripe API host is checked live inside validate-curl-against-mock.sh
 # against the mock server, not by lychee
-https://api\.stripe\.com.*
+https://api\.stripe\.com/v1/.*
 
 # mailto: links
 ^mailto:.*
