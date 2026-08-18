@@ -1,0 +1,33 @@
+# Markdownlint configuration for docs-pipeline
+# Reference: https://github.com/DavidAnson/markdownlint/blob/main/README.md#configuration
+
+default: true
+
+# Common rules to enable/disable or configure
+rules:
+  line-length:
+    line_length: 120
+    heading_line_length: 120
+    headers: true
+    code_blocks: false
+    code_lines: false
+    tables: false
+    headers: true
+  no-hard-tabs:
+    code_blocks: true
+  whitespace:
+    br_spaces: 2
+  no-trailing-punctuation:
+    punctuation: ".,;:"
+  no-multiple-blanks:
+    maximum: 1
+  ul-indent:
+    indent: 2
+    start_indent: 2
+  md003:
+    style: "consistent"
+  md004:
+    style: "consistent"
+  md007:
+    indent: 2
+    start_indent: 2
